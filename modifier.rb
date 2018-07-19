@@ -45,15 +45,18 @@ class Modifier
     @cancellation_factor = cancellation_factor
   end
 
+  def initialize_combiner(input_enumerator)
+    return combiner = Combiner.new do |value|
+      value[KEYWORD_UNIQUE_ID]
+    end.combine(input_enumerator)
+  end
+
   def modify(output, input)
     input = sort(input)
 
     input_enumerator = lazy_read(input)
-
-    combiner = Combiner.new do |value|
-      value[KEYWORD_UNIQUE_ID]
-    end.combine(input_enumerator)
-
+    combiner = initialize_combiner(input_enumerator)
+    
     merger = Enumerator.new do |yielder|
       while true
         begin
