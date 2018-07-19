@@ -51,12 +51,7 @@ class Modifier
     end.combine(input_enumerator)
   end
 
-  def modify(output, input)
-    input = sort(input)
-
-    input_enumerator = lazy_read(input)
-    combiner = initialize_combiner(input_enumerator)
-    
+  def create_merger(combiner)
     merger = Enumerator.new do |yielder|
       while true
         begin
@@ -68,6 +63,15 @@ class Modifier
         end
       end
     end
+    return merger
+  end
+
+  def modify(output, input)
+    input = sort(input)
+
+    input_enumerator = lazy_read(input)
+    combiner = initialize_combiner(input_enumerator)
+    merger = create_merger(combiner)
 
     done = false
     file_index = 0
